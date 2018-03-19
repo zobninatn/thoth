@@ -21,7 +21,7 @@ services:
     ports: 
       - "5432:5432"
 
-  mongodb:
+  mongo:
     container_name: mongo-thoth
     image: mongo:3.6.3-jessie
     restart: always 

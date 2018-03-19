@@ -1,5 +1,5 @@
 Django==2.0.3
 djangorestframework==3.7.7
+psycopg2-binary==2.7.4
 gunicorn==19.7.1
-psycopg2==2.7.4
 celery==4.1.0

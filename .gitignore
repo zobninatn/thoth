@@ -3,3 +3,4 @@
 rest-env/
 web/web-variables.env
 __pycache__/
+mongo/

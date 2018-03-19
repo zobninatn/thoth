@@ -7,8 +7,8 @@ services:
     build: ./web
     command: python /web/manage.py migrate --noinput
     command: bash -c "gunicorn config.wsgi:application -w 2 -b :8000"
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     volumes:
       - ./web:/web
     depends_on: 
@@ -28,4 +28,4 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - .:/data/db
+      - ./mongo:/data/db

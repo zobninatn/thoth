@@ -1,0 +1,31 @@
+version: '3'
+services:
+  web:
+    container_name: web-thoth
+    env_file: web/web-variables.env
+    restart: always
+    build: ./web
+    command: python /web/manage.py migrate --noinput
+    command: bash -c "gunicorn config.wsgi:application -w 2 -b :8000"
+    expose:
+      - "8000"
+    volumes:
+      - ./web:/web
+    depends_on: 
+      - postgres 
+
+  postgres: 
+    container_name: postgres-thoth
+    image: postgres:10
+    restart: always 
+    ports: 
+      - "5432:5432"
+
+  mongodb:
+    container_name: mongo-thoth
+    image: mongo:3.6.3-jessie
+    restart: always 
+    ports:
+      - "27017:27017"
+    volumes:
+      - .:/data/db

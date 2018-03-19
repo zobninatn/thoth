@@ -1,4 +1,4 @@
-# Basic Setup:
+# Basic Setup
 
 From the root of the project directory:
 

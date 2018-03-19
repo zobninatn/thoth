@@ -1,5 +1,31 @@
 version: '3'
 services:
+  rabbitmq:
+    container_name: rabbitmq-thoth
+    image: rabbitmq:3.6
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672" 
+      - "15672:15672" 
+
+  mongo:
+    container_name: mongo-thoth
+    image: mongo:3.2
+    restart: always 
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo:/data/db
+
+  postgres: 
+    container_name: postgres-thoth
+    image: postgres:10
+    restart: always 
+    ports: 
+      - "5432:5432"
+
   web:
     container_name: web-thoth
     env_file: web/web-variables.env
@@ -14,18 +40,18 @@ services:
     depends_on: 
       - postgres 
 
-  postgres: 
-    container_name: postgres-thoth
-    image: postgres:10
-    restart: always 
-    ports: 
-      - "5432:5432"
-
-  mongo:
-    container_name: mongo-thoth
-    image: mongo:3.6.3-jessie
-    restart: always 
-    ports:
-      - "27017:27017"
+  celery:
+    container_name: celery-thoth
+    env_file: web/web-variables.env
+    restart: always
+    build: ./web
+    command: bash -c "celery worker --loglevel=info -A config -Q default -n default@%h" 
     volumes:
-      - ./mongo:/data/db
+      - ./web:/web
+    links:
+      - postgres
+      - mongo
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+

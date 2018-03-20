@@ -1,5 +1,4 @@
-from celery import Celery, shared_task, states
-from celery.exceptions import Ignore
+from celery import Celery
 from django.conf import settings
 import requests
 import hashlib
@@ -13,15 +12,8 @@ app.config_from_object('config:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
-def unpack_chain(nodes):
-    while nodes.parent:
-        yield nodes.parent
-        nodes = nodes.parent
-    yield nodes
-
-
 @app.task(bind=True)
-def download(self, url, filename):
+def download(url, filename):
     """
     Downloads a file from the url to the filesystem
     """
@@ -41,7 +33,7 @@ def download(self, url, filename):
 
 
 @app.task(bind=True)
-def hash(self, path):
+def hash(path):
     """
     Counts md5 hash of a file from path
     """

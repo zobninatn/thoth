@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import status
 from celery.result import AsyncResult
-from celery import uuid, chain, group
+from celery import uuid, chain
 
 from api import tasks
 import logging
@@ -17,8 +17,6 @@ class HashViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         try:
             res = AsyncResult(pk)
-            tmp = [t.status for t in list(tasks.unpack_chain(res))]
-            logger.debug(tmp)
             if res.state == 'SUCCESS':
                 content = {'state': res.state, 'result': res.get()}
                 return Response(content, status=status.HTTP_200_OK)

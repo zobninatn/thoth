@@ -31,11 +31,11 @@ class HashViewSetTest(SimpleTestCase):
         hash_view_create = HashViewSet.as_view({'post': 'create'})
         response = hash_view_create(request)
         response.render()
-        id = json.loads(response.content)['GUID']
+        guid = json.loads(response.content)['GUID']
 
         request = self.factory.get('/notes/')
         hash_view_retrieve = HashViewSet.as_view({'get': 'retrieve'})
-        retrieve_response = hash_view_retrieve(request, pk=id)
+        retrieve_response = hash_view_retrieve(request, pk=guid)
         self.assertEqual(retrieve_response.status_code, 409)
 
     def test_retrieve_success(self):
@@ -44,12 +44,12 @@ class HashViewSetTest(SimpleTestCase):
         hash_view_create = HashViewSet.as_view({'post': 'create'})
         response = hash_view_create(request)
         response.render()
-        id = json.loads(response.content)['GUID']
+        guid = json.loads(response.content)['GUID']
         sleep(5)
 
         request = self.factory.get('/notes/')
         hash_view_retrieve = HashViewSet.as_view({'get': 'retrieve'})
-        retrieve_response = hash_view_retrieve(request, pk=id)
+        retrieve_response = hash_view_retrieve(request, pk=guid)
         self.assertEqual(retrieve_response.status_code, 200)
 
     def test_retrieve_failure_not_downloadable(self):
@@ -58,12 +58,12 @@ class HashViewSetTest(SimpleTestCase):
         hash_view_create = HashViewSet.as_view({'post': 'create'})
         response = hash_view_create(request)
         response.render()
-        id = json.loads(response.content)['GUID']
+        guid = json.loads(response.content)['GUID']
         sleep(5)
 
         request = self.factory.get('/notes/')
         hash_view_retrieve = HashViewSet.as_view({'get': 'retrieve'})
-        retrieve_response = hash_view_retrieve(request, pk=id)
+        retrieve_response = hash_view_retrieve(request, pk=guid)
         self.assertEqual(retrieve_response.status_code, 400)
 
     def test_retrieve_failure_broken_link(self):
@@ -72,12 +72,12 @@ class HashViewSetTest(SimpleTestCase):
         hash_view_create = HashViewSet.as_view({'post': 'create'})
         response = hash_view_create(request)
         response.render()
-        id = json.loads(response.content)['GUID']
+        guid = json.loads(response.content)['GUID']
         sleep(5)
 
         request = self.factory.get('/notes/')
         hash_view_retrieve = HashViewSet.as_view({'get': 'retrieve'})
-        retrieve_response = hash_view_retrieve(request, pk=id)
+        retrieve_response = hash_view_retrieve(request, pk=guid)
         self.assertEqual(retrieve_response.status_code, 400)
 
 
@@ -99,4 +99,3 @@ class TasksTest(SimpleTestCase):
         url = 'https://sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/sciencelabvk.gif'
         result = tasks.is_downloadable(url)
         self.assertEqual(result, True)
-

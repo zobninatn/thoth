@@ -13,7 +13,7 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
 @app.task(bind=True)
-def download(url, filename):
+def download(self, url, filename):
     """
     Downloads a file from the url to the filesystem
     """
@@ -33,7 +33,7 @@ def download(url, filename):
 
 
 @app.task(bind=True)
-def hash(path):
+def hash(self, path):
     """
     Counts md5 hash of a file from path
     """

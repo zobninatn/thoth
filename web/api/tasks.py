@@ -1,9 +1,9 @@
-from celery import Celery, shared_task, states, task, Task, current_task
+from celery import Celery, shared_task, states
 from celery.exceptions import Ignore
-from django.core.files.storage import FileSystemStorage
 from django.conf import settings
-from django.core.files import File
 import requests
+import hashlib
+import os
 
 from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
@@ -13,7 +13,7 @@ app.config_from_object('config:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
-@shared_task() 
+@shared_task()
 def download(url, filename):
     """
     Downloads a file from the url to the filesystem
@@ -21,11 +21,13 @@ def download(url, filename):
     logger.debug(url)
     if is_downloadable(url):
         logger.debug("File downloadable")
-
-        with open(filename, "wb") as file:
+        path = './data/'
+        if not os.path.exists(path):
+            os.makedirs(path)
+        with open(path + filename, "wb") as file:
             response = requests.get(url)
             file.write(response.content)
-        return filename
+        return path+filename
     else:
         logger.debug("File is not downloadable")
         download.update_state(
@@ -38,9 +40,17 @@ def download(url, filename):
 
 @shared_task()
 def hash(path):
+    """
+    Counts md5 hash of a file from path
+    """
     logger.debug(path)
     logger.debug("Hashing started")
-    return path
+    hash_md5 = hashlib.md5()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096*32), b""):
+            hash_md5.update(chunk)
+    os.remove(path)
+    return hash_md5.hexdigest()
 
 
 def is_downloadable(url):

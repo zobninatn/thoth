@@ -1,5 +1,7 @@
 .idea/
 .vscode/
+web/thoth-env/
+web/static/
 rest-env/
 web/web-variables.env
 __pycache__/

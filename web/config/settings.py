@@ -8,10 +8,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_KEY', default='@)a(a&0b#o#yv!3khqe2k^na$=k0ydk6125jh$xa6gwz(zg8-@')
-
+STATIC_ROOT = BASE_DIR + '/static'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ['DJANGO_DEBUG'] == 'True'
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'celery',
     'api'
 ]
 
@@ -69,14 +70,15 @@ DATABASES = {
     }
 }
 
-BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'  
-CELERY_RESULT_BACKEND = 'mongodb://mongo:27017/0'  
+BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'
+CELERY_RESULT_BACKEND = 'mongodb://mongo:27017/0'
 
 # django-extensions
 SHELL_PLUS_PRE_IMPORTS = (
     ('api.tasks', '*'),
 )
 
+STATIC_URL = '/static/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

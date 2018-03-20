@@ -7,7 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 router = routers.DefaultRouter()
-router.register(r'hash', api.HashTaskViewSet, base_name='hash')
+router.register(r'hash', api.HashViewSet, base_name='hash')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

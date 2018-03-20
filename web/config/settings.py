@@ -12,7 +12,9 @@ SECRET_KEY = os.environ.get(
 STATIC_ROOT = BASE_DIR + '/static'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ['DJANGO_DEBUG'] == 'True'
+DEBUG = False
+if 'DJANGO_DEBUG' in os.environ:
+    DEBUG = os.environ['DJANGO_DEBUG'] == 'True'
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -142,7 +144,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': "DEBUG",
         },
-        'celery.task': {
+        'celery': {
             'handlers': ['console'],
             'level': "DEBUG",
         },

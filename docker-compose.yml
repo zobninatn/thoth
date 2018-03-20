@@ -32,6 +32,7 @@ services:
     restart: always
     build: ./web
     command: python /web/manage.py migrate --noinput
+    command: pythom /web/manage.py test api.tests
     command: bash -c "gunicorn config.wsgi:application -w 2 -b :8000"
     ports:
       - "8000:8000"

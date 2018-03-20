@@ -4,6 +4,5 @@ web/thoth-env/
 web/static/
 rest-env/
 web/data/
-web/web-variables.env
 __pycache__/
 mongo/

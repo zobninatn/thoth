@@ -7,7 +7,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_KEY', default='@)a(a&0b#o#yv!3khqe2k^na$=k0ydk6125jh$xa6gwz(zg8-@')
+SECRET_KEY = os.environ.get(
+    'DJANGO_KEY', default='@)a(a&0b#o#yv!3khqe2k^na$=k0ydk6125jh$xa6gwz(zg8-@')
 STATIC_ROOT = BASE_DIR + '/static'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -16,7 +17,7 @@ DEBUG = os.environ['DJANGO_DEBUG'] == 'True'
 ALLOWED_HOSTS = [
     'localhost',
     'web'
-    ]
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -71,7 +72,7 @@ DATABASES = {
 }
 
 BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'
-CELERY_RESULT_BACKEND = 'mongodb://mongo:27017/0'
+CELERY_RESULT_BACKEND = 'mongodb://mongo:27017/thoth'
 
 # django-extensions
 SHELL_PLUS_PRE_IMPORTS = (
@@ -92,3 +93,62 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
+        }
+    },
+    'formatters': {
+        'main_formatter': {
+            'format': '[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)d] %(message)s',
+            'datefmt': "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'main_formatter',
+        },
+
+        'null': {
+            "class": 'logging.NullHandler',
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': "DEBUG",
+        },
+        'py.warnings': {
+            'handlers': ['console'],
+            'level': "DEBUG",
+        },
+        'celery.task': {
+            'handlers': ['console'],
+            'level': "DEBUG",
+        },
+        '': {
+            'handlers': ['console'],
+            'level': "DEBUG",
+        },
+    }
+}

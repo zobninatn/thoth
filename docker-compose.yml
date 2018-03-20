@@ -45,7 +45,7 @@ services:
     env_file: web/web-variables.env
     restart: always
     build: ./web
-    command: bash -c "celery worker -c 2 --loglevel=info -A config -Q default -n default@%h" 
+    command: bash -c "celery worker -c 2 --loglevel=debug -A config"
     volumes:
       - ./web:/web
     links:

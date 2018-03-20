@@ -27,4 +27,4 @@ docker-compose up
 
 `POST localhost:8000/hash` with `url` paramenter returns GUID of the task
 
-`GET localhost:8000/hash/GUID` where GUID is your task GUID returns result or status of the task
+`GET localhost:8000/hash/GUID` where GUID is your task GUID returns md5 sum of the file or status of the task

@@ -4,8 +4,6 @@ from rest_framework import status
 from celery.result import AsyncResult
 from celery import uuid
 
-from api import serializers
-from api.models import Task
 from api import tasks
 import logging
 
@@ -30,7 +28,6 @@ class HashTaskViewSet(viewsets.ViewSet):
                 # logger.debug(res.result)
                 # logger.debug(res.info)
                 # logger.debug(res.msg)
-
                 content = {'state': res.state}
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
             else:
@@ -47,9 +44,6 @@ class HashTaskViewSet(viewsets.ViewSet):
             logger.debug(url)
             filename = uuid()
             chain = (tasks.download.s(url, filename) | tasks.hash.s()).apply_async()
-            # res = (tasks.download.subtask(args=(id, url), task_id=id) | tasks.hash.s()).delay() # (tasks.download.apply_async((id, url), task_id=id) | tasks.hash.s()).delay()
-            logger.debug(chain)
-            # logger.debug("chain id: {}".format(chain))
             logger.debug("id: {}".format(id))
             content = {'GUID': chain.id}
             return Response(content, status=status.HTTP_202_ACCEPTED)

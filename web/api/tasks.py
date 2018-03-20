@@ -13,12 +13,7 @@ app.config_from_object('config:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
-class CallbackTask(Task):
-    def on_success(self, retval, task_id, args, kwargs):
-        logger.debug("download succeed")
-
-
-@shared_task(base=CallbackTask)  # this does the trick
+@shared_task() 
 def download(url, filename):
     """
     Downloads a file from the url to the filesystem
@@ -41,7 +36,7 @@ def download(url, filename):
         raise Ignore()
 
 
-@task(base=CallbackTask)
+@shared_task()
 def hash(path):
     logger.debug(path)
     logger.debug("Hashing started")

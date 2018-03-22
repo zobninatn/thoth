@@ -38,6 +38,18 @@ class HashViewSetTest(SimpleTestCase):
         retrieve_response = hash_view_retrieve(request, pk=guid)
         self.assertEqual(retrieve_response.status_code, 409)
 
+    """
+    TODO: 
+    
+    Next tests should not depend on time.sleep()
+    Possible solution - run celery tasks synchronously 
+    or just test celery tasks without ViewSets.
+
+    info: http://docs.celeryproject.org/projects/django-celery/en/2.4/cookbook/unit-testing.html
+    """
+
+
+
     def test_retrieve_success(self):
         url = 'https://sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/sciencelabvk.gif'
         request = self.factory.post('/hash/', {'url': url})

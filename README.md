@@ -1,4 +1,4 @@
-Thoth uses Celery as a task queue, RabbitMQ as a message broker and MongoDB as a celery result backend.
+Thoth uses Celery as a task queue, RabbitMQ as a message broker and MongoDB as a celery result backend
 
 # Basic Setup
 

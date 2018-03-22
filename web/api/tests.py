@@ -5,6 +5,9 @@ from api import tasks
 from time import sleep
 import json
 
+IMAGE_URL = "https://avatars1.githubusercontent.com/u/9352211"
+IMAGE_URL_BROKEN = "https://avatars1.githubuserconten/"
+IMAGE_URL_TEXT  = "https://github.com" 
 
 class HashViewSetTest(SimpleTestCase):
     """
@@ -13,8 +16,7 @@ class HashViewSetTest(SimpleTestCase):
     factory = APIRequestFactory()
 
     def test_create_success(self):
-        url = 'https://sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/sciencelabvk.gif'
-        request = self.factory.post('/hash/', {'url': url})
+        request = self.factory.post('/hash/', {'url': IMAGE_URL})
         hash_view = HashViewSet.as_view({'post': 'create'})
         response = hash_view(request)
         self.assertEqual(response.status_code, 202)
@@ -25,19 +27,6 @@ class HashViewSetTest(SimpleTestCase):
         response = hash_view(request)
         self.assertEqual(response.status_code, 400)
 
-    def test_retrieve_pending(self):
-        url = 'https://sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/sciencelabvk.gif'
-        request = self.factory.post('/hash/', {'url': url})
-        hash_view_create = HashViewSet.as_view({'post': 'create'})
-        response = hash_view_create(request)
-        response.render()
-        guid = json.loads(response.content)['GUID']
-
-        request = self.factory.get('/notes/')
-        hash_view_retrieve = HashViewSet.as_view({'get': 'retrieve'})
-        retrieve_response = hash_view_retrieve(request, pk=guid)
-        self.assertEqual(retrieve_response.status_code, 409)
-
     """
     TODO: 
     
@@ -47,46 +36,31 @@ class HashViewSetTest(SimpleTestCase):
 
     info: http://docs.celeryproject.org/projects/django-celery/en/2.4/cookbook/unit-testing.html
     """
-
-
-
-    def test_retrieve_success(self):
-        url = 'https://sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/sciencelabvk.gif'
+    def retrieve_guid_with_delay(self, url):
         request = self.factory.post('/hash/', {'url': url})
         hash_view_create = HashViewSet.as_view({'post': 'create'})
         response = hash_view_create(request)
         response.render()
         guid = json.loads(response.content)['GUID']
-        sleep(5)
+        sleep(1)
+        return guid
 
+    def test_retrieve_success(self):
+        guid = self.retrieve_guid_with_delay(IMAGE_URL)
         request = self.factory.get('/notes/')
         hash_view_retrieve = HashViewSet.as_view({'get': 'retrieve'})
         retrieve_response = hash_view_retrieve(request, pk=guid)
         self.assertEqual(retrieve_response.status_code, 200)
 
     def test_retrieve_failure_not_downloadable(self):
-        url = 'https://sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/science'
-        request = self.factory.post('/hash/', {'url': url})
-        hash_view_create = HashViewSet.as_view({'post': 'create'})
-        response = hash_view_create(request)
-        response.render()
-        guid = json.loads(response.content)['GUID']
-        sleep(5)
-
+        guid = self.retrieve_guid_with_delay(IMAGE_URL_TEXT)
         request = self.factory.get('/notes/')
         hash_view_retrieve = HashViewSet.as_view({'get': 'retrieve'})
         retrieve_response = hash_view_retrieve(request, pk=guid)
         self.assertEqual(retrieve_response.status_code, 400)
 
     def test_retrieve_failure_broken_link(self):
-        url = 'sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/sciencelabvk.gif'
-        request = self.factory.post('/hash/', {'url': url})
-        hash_view_create = HashViewSet.as_view({'post': 'create'})
-        response = hash_view_create(request)
-        response.render()
-        guid = json.loads(response.content)['GUID']
-        sleep(5)
-
+        guid = self.retrieve_guid_with_delay(IMAGE_URL_BROKEN)
         request = self.factory.get('/notes/')
         hash_view_retrieve = HashViewSet.as_view({'get': 'retrieve'})
         retrieve_response = hash_view_retrieve(request, pk=guid)
@@ -98,16 +72,13 @@ class TasksTest(SimpleTestCase):
     Test module for celery tasks
     """
     def test_is_downloadable_broken_link(self):
-        url = 'sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/sciencelabvk.gif'
-        result = tasks.is_downloadable(url)
+        result = tasks.is_downloadable(IMAGE_URL_BROKEN)
         self.assertEqual(result, False)
 
     def test_is_downloadable_text(self):
-        url = 'https://sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/science'
-        result = tasks.is_downloadable(url)
+        result = tasks.is_downloadable(IMAGE_URL_TEXT)
         self.assertEqual(result, False)
 
     def test_is_downloadable_success(self):
-        url = 'https://sun1-12.userapi.com/c816421/u16366863/docs/2e45b2ea34b1/sciencelabvk.gif'
-        result = tasks.is_downloadable(url)
+        result = tasks.is_downloadable(IMAGE_URL)
         self.assertEqual(result, True)

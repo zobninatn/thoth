@@ -54,8 +54,8 @@ def is_downloadable(url):
     Does the url contain a downloadable resource
     """
     try:
-        h = requests.head(url, allow_redirects=True)
-        header = h.headers
+        request = requests.head(url, allow_redirects=True)
+        header = request.headers
         content_type = header.get('content-type')
         logger.debug('content_type: {}'.format(content_type))
         keywords = ['text/html', 'text', 'html']
@@ -63,5 +63,5 @@ def is_downloadable(url):
             if word in content_type.lower():
                 return False
         return True
-    except requests.exceptions.MissingSchema:
+    except:
         return False

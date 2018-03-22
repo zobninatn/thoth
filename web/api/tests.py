@@ -34,6 +34,8 @@ class HashViewSetTest(SimpleTestCase):
     Possible solution - run celery tasks synchronously 
     or just test celery tasks without ViewSets.
 
+    It also cause tests fails with slow internet.
+
     info: http://docs.celeryproject.org/projects/django-celery/en/2.4/cookbook/unit-testing.html
     """
     def retrieve_guid_with_delay(self, url):
